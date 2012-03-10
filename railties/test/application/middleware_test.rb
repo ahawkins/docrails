@@ -26,6 +26,7 @@ module ApplicationTests
       boot!
 
       assert_equal [
+        "Rack::Sendfile",
         "ActionDispatch::Static",
         "Rack::Lock",
         "ActiveSupport::Cache::Strategy::LocalCache",
@@ -36,7 +37,6 @@ module ApplicationTests
         "ActionDispatch::ShowExceptions",
         "ActionDispatch::DebugExceptions",
         "ActionDispatch::RemoteIp",
-        "Rack::Sendfile",
         "ActionDispatch::Reloader",
         "ActionDispatch::Callbacks",
         "ActiveRecord::ConnectionAdapters::ConnectionManagement",
@@ -49,6 +49,36 @@ module ApplicationTests
         "Rack::ConditionalGet",
         "Rack::ETag",
         "ActionDispatch::BestStandardsSupport"
+      ], middleware
+    end
+
+    test "api middleware stack" do
+      add_to_config "config.middleware.api_only!"
+      add_to_config "config.force_ssl = true"
+      add_to_config "config.action_dispatch.x_sendfile_header = 'X-Sendfile'"
+
+      boot!
+
+      assert_equal [
+        "Rack::SSL",
+        "Rack::Sendfile",
+        "ActionDispatch::Static",
+        "Rack::Lock",
+        "ActiveSupport::Cache::Strategy::LocalCache",
+        "Rack::Runtime",
+        "ActionDispatch::RequestId",
+        "Rails::Rack::Logger",
+        "ActionDispatch::ShowExceptions",
+        "ActionDispatch::DebugExceptions",
+        "ActionDispatch::RemoteIp",
+        "ActionDispatch::Reloader",
+        "ActionDispatch::Callbacks",
+        "ActiveRecord::ConnectionAdapters::ConnectionManagement",
+        "ActiveRecord::QueryCache",
+        "ActionDispatch::ParamsParser",
+        "ActionDispatch::Head",
+        "Rack::ConditionalGet",
+        "Rack::ETag"
       ], middleware
     end
 
